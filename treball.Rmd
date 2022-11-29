@@ -1,0 +1,122 @@
+---
+title: "Treball d'Estadística"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    self_contained: yes
+---
+
+```{r setup, include=FALSE}
+source('config.R')
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Comencem carregant els paquets d'R que utilitzarem:
+
+```{r, message = FALSE, warning=FALSE, error = TRUE}
+# Aquests són alguns dels paquet que hem vist a classe i és
+# possible qu puguis fer servir.
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(lmtest)
+```
+
+El conjunt de dades el tenim guardat en un conjunt de dades en format `csv`, l'obrim:
+
+```{r, message=FALSE}
+penguins = read_csv('penguins_mostra.csv')
+```
+
+## El conjunt de dades `penguins`
+
+El conjunt `penguins` conté _vuit_ característiques de diferents espècies de pinguins. El nom de les columnes són:
+
+* `species`: Espècie del pingüí: [pingüí de Papua](https://ca.wikipedia.org/wiki/Ping%C3%BC%C3%AD_de_corona_blanca) ("Gentoo"), [pingüí d'Adèlia](https://ca.wikipedia.org/wiki/Ping%C3%BC%C3%AD_de_corona_blanca) ("Adelie") i [pingüí carablanc](https://ca.wikipedia.org/wiki/Ping%C3%BC%C3%AD_carablanc) ("Chinstrap").
+* `island`: illa on s'ha registrat l'exemplar: illes Biscoe, illa Dream i illa Torgersen.
+* `bill_length_mm`: llargada del bec en mil·límetres.
+* `bill_depth_mm`: profunditat del bec en mil·límetres.
+* `flipper_length_mm`: llargada de l'aleta en mil·límetres.
+* `body_mass_g`: pes en grams.
+* `sex`: sexe del pingüí.
+* `year`: any que s'ha registrat.
+
+<p style="color:blue;">Descriu les característiques dels pinguins del conjunt de dades mitjançant una taula on es descriguin les principal característiques de les variables. Si la variable és numèrica, caldrà mostrar un estadístic de localització i un estadístic de dispersió. Si la variable és categòrica, per cada categòria caldrà mostrar la freqüència absoluta i la freqüència en tant per cent. A Google trobareu molts exemples de taules descriptives escrivint el text: _"descriptive table"_.</p>
+
+<p style="color:blue;">Amb R existeixen alguns paquets que us poden facilitar l'inclusió de taules dins d'un arxiu R-markdown. El més bàsic seria la funció `kable()` del paquet `knitr`, que ja teniu instal·lat. Paquets més avançats serien el paquet [`kableExtra`](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html), el paquet [`gt`](https://gt.rstudio.com/), o el paquet [`flextable`](https://davidgohel.github.io/flextable/).</p>
+
+## El bec dels pingüins
+
+En el nostre conjunt de dades hem observat que la llargada del bec és aproximadament 2.5 vegades més gran que la profunditat del bec. Creieu que podem treballar amb aquesta hipòtesi?
+
+<p style="color:blue;">Construeix una variable que contingui la profunditat del bec multiplicada per 2.5. Utilitza aquesta nova variable per contrastar la hipòtesi. Especifica clarament les hipòtesis del contrast i resol-lo fent servir el test que trobis més adequat.</p>
+
+<p style="color:blue;">Un cop hagis resolt el test, utilitza un gràfic per donar suport a les conclusions que hagis tret.</p> 
+
+
+## El sexe dels pingüins
+
+Hem observat que el sexe dels pingüins no sembla aportar gaire informació sobre l'animal ni la mostra recollida. Ens hem plantejat tres hipotesis que voldríem contrastar:
+
+* La proporció de pingüins mascle i femella és la mateixa.
+* La profunditat del bec és la mateixa en funció del sexe del pingüí.
+* La distribució del sexe dels pingüins és la mateixa en funció de l'espècie.
+
+<p style="color:blue;">Defineix les hipotesis dels constrats que plantejaries, i aplica el testos que creguis més oportuns per donar-ne resposta.</p>
+
+<p style="color:blue;">Un cop hagis resolt el testos, utilitza un gràfic per donar suport a les conclusions que hagis tret.</p>
+
+## Els pingüins d'Adèlia
+
+<div style="float: left; width: 30%;">
+
+```{r, echo=FALSE, out.width="60%", fig.align='center'}
+knitr::include_graphics('adelie.jpg')
+```
+
+</div>
+
+<div style="float: left; width: 70%;">
+
+En aquest apartat únicament considerarem els pingüins d'Adèlia (`species == 'Adelie'`). Per això, primerament filtrem el conjunt dades:
+
+```{r}
+penguins_adelie = penguins %>%
+  filter(species == 'Adelie')
+```
+
+Obtenint un nou conjunt amb `r nrow(penguins_adelie)` observacions.
+
+<p style="color:blue;">Aquest tipus de pingüí ha estat observat a diferents illes (`island`). Voldríem veure si el pes dels animals és similar en les diferents illes. Proposa un contrast que ajudi a donar resposta a aquesta pregunta. Utilitza el test que creguis més adequat.</p>
+
+<p style="color:blue;">Un cop hagis resolt el test, empra un gràfic per donar suport a les conclusions que hagis tret.</p>
+
+</div>
+
+
+
+
+
+## El pes dels pingüins
+
+Voldríem construir un model que ens ajudi a predir el pes d'un pingüí utilitzant les variables morfològiques del bec i l'aleta (`bill_length_mm`, `bill_depth_mm`, `flipper_length_mm`), l'espècie (`species`), l'illa on s'ha observat (`island`) i el seu sexe (`sex`). Per aquest objectiu, hem agafat els 120 primers pingüins de la nostra taula per construir un bon model lineal. Les `nrow(penguins)-120` observacions restants, s'utilitzaran per veure si el model predictiu funciona correctament.
+
+Primerament, seleccionarem les 120 primeres observacions que farem servir per construir el model.
+
+```{r}
+penguins_deriv = penguins %>%
+  slice(1:120)
+```
+
+<p style="color:blue;">Construeix un model lineal $\mathcal{M}_f$ fent servir les variables proposades o noves variables construïdes a partir d'aquestes. El model ha de ser el més senzill possible, i únicament ha de mantenir ´les variables que consideris rellevants. __No facis servir un mètode de selecció automàtica__. Justifica les decisions que prenguis per escollir el teu model final. Quin és l'[error quadràtic mitjà](https://en.wikipedia.org/wiki/Mean_squared_error)?^[L'error quadràtic mitjà és la suma dels quadrats dels errors vista a classe, dividida per la mida mostral. $\text{MSE} = \frac{\text{SQE}}{n}$.]</p>
+
+Utilitzant la taula amb els pingüins no utilitzats per construir el model:
+
+```{r}
+penguins_valid = penguins %>%
+  slice(-(1:120))
+```
+
+<p style="color:blue;">Afegeix una nova columna a la taula `penguins_valid` amb el pes predit fent servir el model construït $\mathcal{M}_f$. Quin percentatge d'observacions es troba dins l'interval de confiança predictiu del 95%? Quin és l'error quadràtic mitjà obtingut amb aquestes noves dades? Explica la diferència observada amb l'error quadràtic mitjà observat amb el conjunt d'ajust.</p>
+
