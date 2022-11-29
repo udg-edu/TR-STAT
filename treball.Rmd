@@ -8,7 +8,6 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-source('config.R')
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
