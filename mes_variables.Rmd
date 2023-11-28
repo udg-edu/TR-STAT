@@ -1,0 +1,10 @@
+* `Runs`: Nombre d'anotacions com atacant 1986.
+* `RBI`: Nombre de voltes sumades mentre s'és batedor el 1986.
+* `Walks`: Nombre d'arribades a la primera base sense batejar el 1986.
+* `CRuns`: Nombre d'anotacions com atacant al llarg de la carrera.
+* `CRBI`: Nombre de voltes sumades com a batedor al llarg de la carrera.
+* `CWalks`: Nombre d'arribades a la primera base sense batejar al llarg de la carrera.
+* `PutOuts`: Nombre de cops que defensant s'elimina a un jugador el 1986.
+* `Assists`: Nombre de cops que defensant es fa una passada que resultat en una eliminació el 1986.
+* `Errors`: Nombre de cops que defensant l'equip contrari fa un punt per culpa d'un error el 1986.
+* `NewLeague`: Lliga que juga el jugador en començar la lliga el 1987.

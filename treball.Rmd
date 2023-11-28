@@ -8,114 +8,86 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval= TRUE)
 ```
 
 Comencem carregant els paquets d'R que utilitzarem:
 
 ```{r, message = FALSE, warning=FALSE, error = TRUE}
-# Aquests són alguns dels paquet que hem vist a classe i és
-# possible qu puguis fer servir.
 library(dplyr)
 library(readr)
-library(ggplot2)
-library(lmtest)
 ```
 
-El conjunt de dades el tenim guardat en un conjunt de dades en format `csv`, l'obrim:
+## El conjunt de dades `hitters`
+
+El conjunt `hitters` conté _onze_ característiques de diferents jugadors de beisbol de les lligues professionals. El nom de les columnes són:
+
+* `PlayerName`: Nom del jugador.
+* `Salary`: Salari en començar la lliga el 1987.
+* `AtBat`: Nombre de vegades batejant el 1986.
+* `Hits`: Nombre de batades el 1986.
+* `CAtBat`: Nombre de vegades batejant al llarg de la carrera.
+* `CHits`: Nombre de batejades al llarg de la carrera.
+* `HmRun`: Nombre de batades fora del camp 1986.
+* `CHmRun`: Nombre de batades fora del camp al llarg de la carrera.
+* `Years`: Nombre d'anys a les lligues professionals.
+* `League`: Lliga professional que es juga ('A' americana, 'N' nacional) al final del 1986.
+* `Division`: Divisió que es juga ('E' est, 'W' oest) al final del 1986.
+
+Nosaltres treballarem amb una mostra de la base de 100 observacions.
 
 ```{r, message=FALSE}
-penguins = read_csv('penguins_mostra.csv')
+hitters = read_tsv('hitters_mostra.tsv')
 ```
 
-## El conjunt de dades `penguins`
-
-El conjunt `penguins` conté _vuit_ característiques de diferents espècies de pinguins. El nom de les columnes són:
-
-* `species`: Espècie del pingüí: [pingüí de Papua](https://ca.wikipedia.org/wiki/Ping%C3%BC%C3%AD_de_corona_blanca) ("Gentoo"), [pingüí d'Adèlia](https://ca.wikipedia.org/wiki/Ping%C3%BC%C3%AD_de_corona_blanca) ("Adelie") i [pingüí carablanc](https://ca.wikipedia.org/wiki/Ping%C3%BC%C3%AD_carablanc) ("Chinstrap").
-* `island`: illa on s'ha registrat l'exemplar: illes Biscoe, illa Dream i illa Torgersen.
-* `bill_length_mm`: llargada del bec en mil·límetres.
-* `bill_depth_mm`: profunditat del bec en mil·límetres.
-* `flipper_length_mm`: llargada de l'aleta en mil·límetres.
-* `body_mass_g`: pes en grams.
-* `sex`: sexe del pingüí.
-* `year`: any que s'ha registrat.
-
-<p style="color:blue;">Descriu les característiques dels pinguins del conjunt de dades mitjançant una taula on es descriguin les principal característiques de les variables. Si la variable és numèrica, caldrà mostrar un estadístic de localització i un estadístic de dispersió. Si la variable és categòrica, per cada categòria caldrà mostrar la freqüència absoluta i la freqüència en tant per cent. A Google trobareu molts exemples de taules descriptives escrivint el text: _"descriptive table"_.</p>
-
-<p style="color:blue;">Amb R existeixen alguns paquets que us poden facilitar l'inclusió de taules dins d'un arxiu R-markdown. El més bàsic seria la funció `kable()` del paquet `knitr`, que ja teniu instal·lat. Paquets més avançats serien el paquet [`kableExtra`](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html), el paquet [`gt`](https://gt.rstudio.com/), o el paquet [`flextable`](https://davidgohel.github.io/flextable/).</p>
-
-## El bec dels pingüins
-
-En el nostre conjunt de dades hem observat que la llargada del bec és aproximadament 2.5 vegades més gran que la profunditat del bec. Creieu que podem treballar amb aquesta hipòtesi?
-
-<p style="color:blue;">Construeix una variable que contingui la profunditat del bec multiplicada per 2.5. Utilitza aquesta nova variable per contrastar la hipòtesi. Especifica clarament les hipòtesis del contrast i resol-lo fent servir el test que trobis més adequat.</p>
-
-<p style="color:blue;">Un cop hagis resolt el test, utilitza un gràfic per donar suport a les conclusions que hagis tret.</p> 
-
-
-## El sexe dels pingüins
-
-Hem observat que el sexe dels pingüins no sembla aportar gaire informació sobre l'animal ni la mostra recollida. Ens hem plantejat tres hipotesis que voldríem contrastar:
-
-* La proporció de pingüins mascle i femella és la mateixa.
-* La profunditat del bec és la mateixa en funció del sexe del pingüí.
-* La distribució del sexe dels pingüins és la mateixa en funció de l'espècie.
-
-<p style="color:blue;">Defineix les hipotesis dels constrats que plantejaries, i aplica el testos que creguis més oportuns per donar-ne resposta.</p>
-
-<p style="color:blue;">Un cop hagis resolt el testos, utilitza un gràfic per donar suport a les conclusions que hagis tret.</p>
-
-## Els pingüins d'Adèlia
-
-<div style="float: left; width: 30%;">
-
-```{r, echo=FALSE, out.width="60%", fig.align='center'}
-knitr::include_graphics('adelie.jpg')
-```
-
-</div>
-
-<div style="float: left; width: 70%;">
-
-En aquest apartat únicament considerarem els pingüins d'Adèlia (`species == 'Adelie'`). Per això, primerament filtrem el conjunt dades:
+Comprovem que hàgim correctament les dades:
 
 ```{r}
-penguins_adelie = penguins %>%
-  filter(species == 'Adelie')
+glimpse(hitters)
 ```
 
-Obtenint un nou conjunt amb `r nrow(penguins_adelie)` observacions.
 
-<p style="color:blue;">Aquest tipus de pingüí ha estat observat a diferents illes (`island`). Voldríem veure si el pes dels animals és similar en les diferents illes. Proposa un contrast que ajudi a donar resposta a aquesta pregunta. Utilitza el test que creguis més adequat.</p>
+### Taula descriptiva
 
-<p style="color:blue;">Un cop hagis resolt el test, empra un gràfic per donar suport a les conclusions que hagis tret.</p>
+Descriu, excepte el nom, totes les variables del teu conjunt de dades. Mostra les característiques en una taula. Per les variables numèriques cal que la descriptiva contingui una mesura de centralitat i una mesura de variabilitat. Per les variables categòriques cal mostrar les freqüències absolutes i relatives. __Per crear la taula descriptiva pots ajudar-te del paquet [`gtsummary`](https://www.danieldsjoberg.com/gtsummary/), amb el que pots crear taules en una gran varietat de formats.__
 
-</div>
+### Sobre el quocient entre el nombre de batades 
 
+Primerament, crearàs dues variables que mesuren el rendiment de la batada de cada jugador l'any 1986 i al llarg de la seva carrera:
 
+1. Crea una nova variable anomenada `AVG` que contingui el quocient entre el nombre de batades (`Hits`) i el nombre de vegades que s'ha estat batejant (`AtBat`). 
+2. Fes el mateix amb el nombre de batades al llarg de la carrera (`CHits`) i el nombre de vegades que s'ha estat batejant (`CAtBat`). Guarda la nova variable com `CAVG`. 
 
+Voldríem aplicar una transformació a la variable `AVG`, de manera que puguem assumir que la nova variable és normal. Per ordre de preferència, voldríem:
+    1. No transformar la variable, 
+    2. Fer una transformació logarítmica, 
+    3. Fer una transformació exponencial. 
+    
+3. Segons l'ordre de preferència establert, quina transformació aplicaries a la teva variable? Mostra visualment les tres opcions, i els contrastos plantejats per donar suport a la transformació proposada.
+  
+4. Treballant amb les variables `AVG` i `CAVG` sense transformar, creus que el rendiment mitjà en la batada de l'any 1986 ha empitjorat el rendiment mitjà observat al llarg de la carrera dels jugadors?
 
+### Sobre la relació entre el salari i la variable `CAVG`
 
-## El pes dels pingüins
+1. Crea una taula que contingui els 15 jugadors amb salaris més alts i els 15 jugadors amb salaris més baixos del teu conjunt de dades. Creus que el rendiment de la batada al llarg de la carrera (`CAVG`) dels jugadors més ben pagats és diferent que la dels jugadors amb salaris més baixos?
 
-Voldríem construir un model que ens ajudi a predir el pes d'un pingüí utilitzant les variables morfològiques del bec i l'aleta (`bill_length_mm`, `bill_depth_mm`, `flipper_length_mm`), l'espècie (`species`), l'illa on s'ha observat (`island`) i el seu sexe (`sex`). Per aquest objectiu, hem agafat els 120 primers pingüins de la nostra taula per construir un bon model lineal. Les `nrow(penguins)-120` observacions restants, s'utilitzaran per veure si el model predictiu funciona correctament.
+### Sobre la relació entre les diferents lligues envers l'AVG 
 
-Primerament, seleccionarem les 120 primeres observacions que farem servir per construir el model.
+Treballant amb tota la mostra:
 
-```{r}
-penguins_deriv = penguins %>%
-  slice(1:120)
-```
+1. Crea una variable `AVG_median` que indiqui si un jugador té el valor de la variable `AVG` per sobre la mediana de la mostra. 
+2. Crea una segona variable `League_Division` que contingui la informació de la variable `League` i `Division` conjuntament. Aquesta nova variable haurà de contenir quatre categories. 
 
-<p style="color:blue;">Construeix un model lineal $\mathcal{M}_f$ fent servir les variables proposades o noves variables construïdes a partir d'aquestes. El model ha de ser el més senzill possible, i únicament ha de mantenir ´les variables que consideris rellevants. __No facis servir un mètode de selecció automàtica__. Justifica les decisions que prenguis per escollir el teu model final. Quin és l'[error quadràtic mitjà](https://en.wikipedia.org/wiki/Mean_squared_error)?^[L'error quadràtic mitjà és la suma dels quadrats dels errors vista a classe, dividida per la mida mostral. $\text{MSE} = \frac{\text{SQE}}{n}$.]</p>
+Amb les variables creades:
 
-Utilitzant la taula amb els pingüins no utilitzats per construir el model:
+3. Descriu numèricament i gràficament les variables `AVG_median` i `League_Division` per separat i conjuntament.
+4. Creus que la mitjana de variable `AVG` és diferent respecte la variable `League_Division`?
+5. Creus que la variable `AVG_median` depèn de la variable `League_Division`?
 
-```{r}
-penguins_valid = penguins %>%
-  slice(-(1:120))
-```
+### Sobre la predicció del salari d'un jugador
 
-<p style="color:blue;">Afegeix una nova columna a la taula `penguins_valid` amb el pes predit fent servir el model construït $\mathcal{M}_f$. Quin percentatge d'observacions es troba dins l'interval de confiança predictiu del 95%? Quin és l'error quadràtic mitjà obtingut amb aquestes noves dades? Explica la diferència observada amb l'error quadràtic mitjà observat amb el conjunt d'ajust.</p>
+Hem construït un model per predir el salari mitjà dels jugadors fent servir les variables: `Years`, `AVG`, `CAVG`,`HmRun`, `CHmRun`, `League` i `Division`. Per seleccionar les variables hem fet servir el mètode de selecció automàtica backward-forward implementat a la funció `step()` d'R valorant cada model amb el criteri AIC. 
 
+1. Quines són les variables seleccionades per aquest mètode de selecció?, i l'AIC del model obtingut?
+2. Fent servir alguna transformació de les 7 variables, proposa un nou model que millori l'AIC del model obtingut a l'apartat anterior.
+3. Argumenta si es compleixen les assumpcions del model obtingut.
